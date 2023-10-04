@@ -1,82 +1,123 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-struct Contadores {
-    int comparacoes; // Número de comparações entre elementos durante a ordenação
-    int acessos_array; // Número de acessos a elementos do array durante a ordenação
-};
+typedef struct {
+    float lat;
+    float lon;
+    float frp;
+} DataPoint;
 
-void merge(int arr[], int esquerda, int meio, int direita, struct Contadores *contadores) {
+// Variáveis globais para contar comparações e acessos ao array
+int comparisons = 0;
+int arrayAccesses = 0;
+
+void merge(DataPoint arr[], int l, int m, int r) {
     int i, j, k;
-    int n1 = meio - esquerda + 1;
-    int n2 = direita - meio;
+    int n1 = m - l + 1;
+    int n2 = r - m;
 
-    int ArrayEsquerdo[n1], ArrayDireito[n2];
+    DataPoint L[n1], R[n2];
 
-    for (i = 0; i < n1; i++) {
-        ArrayEsquerdo[i] = arr[esquerda + i];
-        contadores->acessos_array++;
-    }
-    for (j = 0; j < n2; j++) {
-        ArrayDireito[j] = arr[meio + 1 + j];
-        contadores->acessos_array++;
-    }
+    for (i = 0; i < n1; i++)
+        L[i] = arr[l + i];
+    for (j = 0; j < n2; j++)
+        R[j] = arr[m + 1 + j];
 
     i = 0;
     j = 0;
-    k = esquerda;
+    k = l;
     while (i < n1 && j < n2) {
-        contadores->comparacoes++;
-        if (ArrayEsquerdo[i] <= ArrayDireito[j]) {
-            arr[k] = ArrayEsquerdo[i];
+
+        // Incrementa o contador de comparações
+        comparisons++;
+
+        if (L[i].frp <= R[j].frp) {
+            arr[k] = L[i];
             i++;
         } else {
-            arr[k] = ArrayDireito[j];
+            arr[k] = R[j];
             j++;
         }
-        contadores->acessos_array++;
         k++;
+        // Incrementa o contador de acessos ao array
+        arrayAccesses++;
     }
 
     while (i < n1) {
-        arr[k] = ArrayEsquerdo[i];
+        arr[k] = L[i];
         i++;
         k++;
-        contadores->acessos_array++;
     }
 
     while (j < n2) {
-        arr[k] = ArrayDireito[j];
+        arr[k] = R[j];
         j++;
         k++;
-        contadores->acessos_array++;
     }
 }
 
-void mergeSort(int arr[], int esquerda, int direita, struct Contadores *contadores) {
-    if (esquerda < direita) {
-        int meio = esquerda + (direita - esquerda) / 2;
-        mergeSort(arr, esquerda, meio, contadores);
-        mergeSort(arr, meio + 1, direita, contadores);
-        merge(arr, esquerda, meio, direita, contadores);
+void mergeSort(DataPoint arr[], int l, int r) {
+    if (l < r) {
+        int m = l + (r - l) / 2;
+
+        mergeSort(arr, l, m);
+        mergeSort(arr, m + 1, r);
+
+        merge(arr, l, m, r);
     }
 }
 
 int main() {
-    int arr[] = {38, 27, 43, 3, 9, 82, 10};
-    int tamanho_arr = sizeof(arr) / sizeof(arr[0]);
-    struct Contadores contadores = {0, 0};
-
-    mergeSort(arr, 0, tamanho_arr - 1, &contadores);
-
-    printf("Array ordenado: ");
-    for (int i = 0; i < tamanho_arr; i++) {
-        printf("%d ", arr[i]);
+    FILE *file = fopen("C:\\Users\\Pulzi\\Desktop\\Projetos\\Aps4Semestre\\mergeSort\\planilha - 500 linhas.csv", "r");
+    if (file == NULL) {
+        fprintf(stderr, "Erro ao abrir o arquivo.\n");
+        return 1;
     }
-    printf("\n");
 
-    printf("Comparações: %d\n", contadores.comparacoes);
-    printf("Acessos ao array: %d\n", contadores.acessos_array);
+    // Contando o número de linhas no arquivo para alocar memória
+    int numLines = 0;
+    char buffer[1024];
+    while (fgets(buffer, sizeof(buffer), file) != NULL) {
+        numLines++;
+    }
+    rewind(file);
+
+    // Alocando memória para armazenar os dados
+    DataPoint *data = malloc(numLines * sizeof(DataPoint));
+    if (data == NULL) {
+        fprintf(stderr, "Erro de alocação de memória.\n");
+        fclose(file);
+        return 1;
+    }
+
+    // Lendo os dados do arquivo CSV e armazenando na estrutura DataPoint
+    int i = 0;
+    while (fgets(buffer, sizeof(buffer), file) != NULL) {
+        sscanf(buffer, "%f,%f,%f", &data[i].lat, &data[i].lon, &data[i].frp);
+        i++;
+    }
+
+    fclose(file);
+
+    printf("Dados antes da ordenação:\n");
+    for (int i = 0; i < numLines; i++) {
+        printf("(%.4f, %.4f, %.1f)\n", data[i].lat, data[i].lon, data[i].frp);
+    }
+
+    mergeSort(data, 0, numLines - 1);
+
+    printf("\nDados após a ordenação por FRP:\n");
+    for (int i = 0; i < numLines; i++) {
+        printf("(%.4f, %.4f, %.1f)\n", data[i].lat, data[i].lon, data[i].frp);
+    }
+
+    // Imprime o número de comparações e acessos ao array
+    printf("\nNúmero de comparações: %d\n", comparisons);
+    printf("Número de acessos ao array: %d\n", arrayAccesses);
+
+    // Liberando a memória alocada
+    free(data);
 
     return 0;
 }
-
