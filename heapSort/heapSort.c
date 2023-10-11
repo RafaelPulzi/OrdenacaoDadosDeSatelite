@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+
 
 typedef struct {
     float lat;
@@ -8,9 +10,8 @@ typedef struct {
     float frp;
 } DataPoint;
 
-// Variáveis globais para contar comparações e acessos ao array
-int comparisons = 0;
-int arrayAccesses = 0;
+int numComparisons = 0; // Contador para comparações
+int numArrayAccesses = 0; // Contador para acessos a arrays
 
 // Função para trocar duas linhas
 void swap(DataPoint *a, DataPoint *b) {
@@ -39,38 +40,44 @@ void escolhaColuna() {
     printf("\nEm qual coluna deseja fazer a ordenacao?\n");
 }
 
-// Função para realizar a ordenação usando Bubble Sort e capturar o número de iterações
-int bubbleSort(DataPoint *arr, int n, int coluna) {
-    int iterations = 0; // Inicialize o contador de iterações
+void heapify(DataPoint *arr, int n, int i) {
+    int largest = i;
+    int left = 2 * i + 1;
+    int right = 2 * i + 2;
 
-    for (int i = 0; i < n - 1; i++) {
-        for (int j = 0; j < n - i - 1; j++) {
-            iterations++; // Incrementar o contador em cada iteração
-
-            switch (coluna) {
-                case 1:
-                    if (arr[j].lat > arr[j + 1].lat) {
-                        swap(&arr[j], &arr[j + 1]);
-                    }
-                    break;
-                case 2:
-                    if (arr[j].lon > arr[j + 1].lon) {
-                        swap(&arr[j], &arr[j + 1]);
-                    }
-                    break;
-                case 3:
-                    if (arr[j].frp > arr[j + 1].frp) {
-                        swap(&arr[j], &arr[j + 1]);
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
+    // Encontrar o maior entre o pai e os filhos
+    if (left < n && arr[left].frp > arr[largest].frp) {
+        largest = left;
+    }
+    if (right < n && arr[right].frp > arr[largest].frp) {
+        largest = right;
     }
 
-    return iterations; // Retornar o número total de iterações
+    // Se o maior não for o pai, trocar e chamar heapify recursivamente
+    if (largest != i) {
+        swap(&arr[i], &arr[largest]);
+        numComparisons++;
+        numArrayAccesses += 4;
+        heapify(arr, n, largest);
+    }
 }
+
+void heapSort(DataPoint *arr, int n) {
+    // Construir um max heap
+    for (int i = n / 2 - 1; i >= 0; i--) {
+        heapify(arr, n, i);
+    }
+
+    // Extrair elementos do heap um por um
+    for (int i = n - 1; i > 0; i--) {
+        // Mover a raiz atual para o final do array
+        swap(&arr[0], &arr[i]);
+        numArrayAccesses += 4;
+        // Chamar heapify no heap reduzido
+        heapify(arr, i, 0);
+    }
+}
+
 
 int main() {
     int database;
@@ -84,6 +91,8 @@ int main() {
         "C:\\Users\\Pulzi\\Desktop\\Projetos\\Aps4Semestre\\0dados\\planilha - 250000 linhas.csv",
         "C:\\Users\\Pulzi\\Desktop\\Projetos\\Aps4Semestre\\0dados\\planilha - 1000000 linhas.csv"
     };
+
+    
 
     if (database < 1 || database > 5) {
         printf("Opção de base de dados inválida.\n");
@@ -120,26 +129,28 @@ int main() {
         i++;
     }
 
-    fclose(file);
-    printf("\n-------------------------------------------------------------\n");
-    printf("Dados antes da ordenacao:\n");
-    for (int i = 0; i < numLines; i++) {
-        printf("(%.4f, %.4f, %.1f)\n", data[i].lat, data[i].lon, data[i].frp);
-    }
-    
     // Escolha de coluna para ordenação
     int coluna;
     escolhaColuna();
     scanf("%d", &coluna);
-    // Ordena os dados usando o Bubble Sort
-    int numIterations = bubbleSort(data, numLines, coluna);
+
+    
+    clock_t start = clock(); // Marca o tempo de início
+    heapSort(data, numLines);
+    clock_t end = clock(); // Marca o tempo de término
+    // Ordena os dados usando o merge Sort
+    
     printf("\n-------------------------------------------------------------\n");
     printf("\nDados apos a ordenacao:\n");
     for (int i = 0; i < numLines; i++) {
         printf("(%.4f, %.4f, %.1f)\n", data[i].lat, data[i].lon, data[i].frp);
     }
+
     printf("\n-------------------------------------------------------------\n");
-    printf("\nNumero de iteracoes: %d\n", numIterations);
+    printf("\nNumero de comparacoes feitas: %d\n", numComparisons);
+    printf("Numero de acessos a arrays: %d\n", numArrayAccesses);
+    double timeSpent = ((double)(end - start)) / CLOCKS_PER_SEC; // Calcula o tempo decorrido em segundos
+    printf("Tempo decorrido para ordenacao: %f segundos\n", timeSpent);
     
     switch (coluna) {
         case 1:
