@@ -69,10 +69,20 @@ void mergeSort(DataPoint arr[], int l, int r) {
 }
 
 int main() {
-    FILE *file = fopen("C:\\Users\\Pulzi\\Desktop\\Projetos\\Aps4Semestre\\mergeSort\\planilha - 500 linhas.csv", "r");
+/*
+    const char *filenames[] = {
+        "C:\\Users\\Pulzi\\Desktop\\Projetos\\Aps4Semestre\\0dados\\planilha - 500 linhas.csv",
+        "C:\\Users\\Pulzi\\Desktop\\Projetos\\Aps4Semestre\\0dados\\planilha - 5000 linhas.csv",
+        "C:\\Users\\Pulzi\\Desktop\\Projetos\\Aps4Semestre\\0dados\\planilha - 50000 linhas.csv",
+        "C:\\Users\\Pulzi\\Desktop\\Projetos\\Aps4Semestre\\0dados\\planilha - 250000 linhas.csv",
+        "C:\\Users\\Pulzi\\Desktop\\Projetos\\Aps4Semestre\\0dados\\planilha - 1000000 linhas.csv"
+    };
+*/
+    FILE *file = fopen("C:\\Users\\Pulzi\\Desktop\\Projetos\\Aps4Semestre\\0dados\\planilha - 500 linhas.csv", "r");
+
     if (file == NULL) {
-        fprintf(stderr, "Erro ao abrir o arquivo.\n");
-        return 1;
+    perror("Erro ao abrir o arquivo");
+    return 1;
     }
 
     // Contando o número de linhas no arquivo para alocar memória

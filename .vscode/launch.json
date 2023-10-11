@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/Pulzi/Desktop/Projetos/Aps4Semestre/mergeSort",
-      "program": "c:/Users/Pulzi/Desktop/Projetos/Aps4Semestre/mergeSort/build/Debug/outDebug",
+      "cwd": "c:/Users/Pulzi/Desktop/Projetos/Aps4Semestre/bubbleSort",
+      "program": "c:/Users/Pulzi/Desktop/Projetos/Aps4Semestre/bubbleSort/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

@@ -78,11 +78,11 @@ int main() {
     scanf("%d", &database);
 
     const char *filenames[] = {
-        "C:\\Users\\Henrique\\Desktop\\Faculdade\\GitHub\\Aps4Semestre\\bubbleSort\\dados\\planilha - 500 linhas.csv",
-        "C:\\Users\\Henrique\\Desktop\\Faculdade\\GitHub\\Aps4Semestre\\bubbleSort\\dados\\planilha - 5000 linhas.csv",
-        "C:\\Users\\Henrique\\Desktop\\Faculdade\\GitHub\\Aps4Semestre\\bubbleSort\\dados\\planilha - 50000 linhas.csv",
-        "C:\\Users\\Henrique\\Desktop\\Faculdade\\GitHub\\Aps4Semestre\\bubbleSort\\dados\\planilha - 250000 linhas.csv",
-        "C:\\Users\\Henrique\\Desktop\\Faculdade\\GitHub\\Aps4Semestre\\bubbleSort\\dados\\planilha - 1000000 linhas.csv"
+        "C:\\Users\\Pulzi\\Desktop\\Projetos\\Aps4Semestre\\0dados\\planilha - 500 linhas.csv",
+        "C:\\Users\\Pulzi\\Desktop\\Projetos\\Aps4Semestre\\0dados\\planilha - 5000 linhas.csv",
+        "C:\\Users\\Pulzi\\Desktop\\Projetos\\Aps4Semestre\\0dados\\planilha - 50000 linhas.csv",
+        "C:\\Users\\Pulzi\\Desktop\\Projetos\\Aps4Semestre\\0dados\\planilha - 250000 linhas.csv",
+        "C:\\Users\\Pulzi\\Desktop\\Projetos\\Aps4Semestre\\0dados\\planilha - 1000000 linhas.csv"
     };
 
     if (database < 1 || database > 5) {
