@@ -91,7 +91,7 @@ int main() {
         };
 
         if (database < 1 || database > 5) {
-            printf("Opção de base de dados inválida.\n");
+            printf("Opcao de base de dados invalida.\n");
             continue; // Retorna ao início do loop
         }
 
@@ -154,7 +154,7 @@ int main() {
         free(data);
 
         // Pergunta ao usuário se deseja encerrar
-        printf("\nDeseja fechar o programa? Se sim, pressione Enter. Caso contrário, insira qualquer texto e pressione Enter.\n");
+        printf("\nDeseja fechar o programa? Se sim, pressione Enter. Caso contrario, insira qualquer texto e pressione Enter.\n");
         scanf("%s", choice);
 
         if (strlen(choice) == 0) { // Se a entrada for uma linha vazia (somente Enter), encerre o programa
