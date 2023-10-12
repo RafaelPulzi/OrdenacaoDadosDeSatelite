@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 typedef struct {
     float lat;
@@ -40,8 +41,8 @@ void escolhaColuna() {
 }
 
 // Função para realizar a ordenação usando Bubble Sort e capturar o número de iterações
-int bubbleSort(DataPoint *arr, int n, int coluna) {
-    int iterations = 0; // Inicialize o contador de iterações
+unsigned long long int bubbleSort(DataPoint *arr, int n, int coluna) {
+    unsigned long long int iterations = 0; // Inicialize o contador de iterações
 
     for (int i = 0; i < n - 1; i++) {
         for (int j = 0; j < n - i - 1; j++) {
@@ -73,89 +74,93 @@ int bubbleSort(DataPoint *arr, int n, int coluna) {
 }
 
 int main() {
-    int database;
-    escolhaDataBase();
-    scanf("%d", &database);
+    char choice[256]; // Variável para a escolha do usuário
 
-    const char *filenames[] = {
-        "C:\\Users\\Pulzi\\Desktop\\Projetos\\Aps4Semestre\\0dados\\planilha - 500 linhas.csv",
-        "C:\\Users\\Pulzi\\Desktop\\Projetos\\Aps4Semestre\\0dados\\planilha - 5000 linhas.csv",
-        "C:\\Users\\Pulzi\\Desktop\\Projetos\\Aps4Semestre\\0dados\\planilha - 50000 linhas.csv",
-        "C:\\Users\\Pulzi\\Desktop\\Projetos\\Aps4Semestre\\0dados\\planilha - 250000 linhas.csv",
-        "C:\\Users\\Pulzi\\Desktop\\Projetos\\Aps4Semestre\\0dados\\planilha - 1000000 linhas.csv"
-    };
+    while (1) { // Loop infinito
+        int database;
+        escolhaDataBase();
+        scanf("%d", &database);
 
-    if (database < 1 || database > 5) {
-        printf("Opção de base de dados inválida.\n");
-        return 1;
-    }
+        // Defina os nomes de arquivo e outros detalhes aqui
+        const char *filenames[] = {
+            "C:\\Users\\Henrique\\Desktop\\Faculdade\\GitHub\\Aps4Semestre\\0dados\\planilha - 500 linhas.csv",
+            "C:\\Users\\Henrique\\Desktop\\Faculdade\\GitHub\\Aps4Semestre\\0dados\\planilha - 5000 linhas.csv",
+            "C:\\Users\\Henrique\\Desktop\\Faculdade\\GitHub\\Aps4Semestre\\0dados\\planilha - 50000 linhas.csv",
+            "C:\\Users\\Henrique\\Desktop\\Faculdade\\GitHub\\Aps4Semestre\\0dados\\planilha - 250000 linhas.csv",
+            "C:\\Users\\Henrique\\Desktop\\Faculdade\\GitHub\\Aps4Semestre\\0dados\\planilha - 1000000 linhas.csv"
+        };
 
-    FILE *file = fopen(filenames[database - 1], "r");
-    
-    if (file == NULL) {
-        fprintf(stderr, "Erro ao abrir o arquivo.\n");
-        return 1;
-    }
+        if (database < 1 || database > 5) {
+            printf("Opção de base de dados inválida.\n");
+            continue; // Retorna ao início do loop
+        }
 
-    // Contando o número de linhas no arquivo para alocar memória
-    int numLines = 0;
-    char buffer[1024];
-    while (fgets(buffer, sizeof(buffer), file) != NULL) {
-        numLines++;
-    }
-    rewind(file);
+        FILE *file = fopen(filenames[database - 1], "r");
 
-    // Alocando memória para armazenar os dados
-    DataPoint *data = malloc(numLines * sizeof(DataPoint));
-    if (data == NULL) {
-        fprintf(stderr, "Erro de alocacao de memoria.\n");
+        if (file == NULL) {
+            fprintf(stderr, "Erro ao abrir o arquivo.\n");
+            continue; // Retorna ao início do loop
+        }
+
+        // Contando o número de linhas no arquivo para alocar memória
+        int numLines = 0;
+        char buffer[1024];
+        while (fgets(buffer, sizeof(buffer), file) != NULL) {
+            numLines++;
+        }
+        rewind(file);
+
+        // Alocando memória para armazenar os dados
+        DataPoint *data = malloc(numLines * sizeof(DataPoint));
+        if (data == NULL) {
+            fprintf(stderr, "Erro de alocação de memória.\n");
+            fclose(file);
+            return 1;
+        }
+
+        // Lendo os dados do arquivo CSV e armazenando na estrutura DataPoint
+        int i = 0;
+        while (fgets(buffer, sizeof(buffer), file) != NULL) {
+            sscanf(buffer, "%f,%f,%f", &data[i].lat, &data[i].lon, &data[i].frp);
+            i++;
+        }
+
         fclose(file);
-        return 1;
+        printf("Dados Carregados com sucesso\n");
+
+        // Escolha de coluna para ordenação
+        int coluna;
+        escolhaColuna();
+        scanf("%d", &coluna);
+
+        clock_t start_time, end_time; // Variáveis para medir o tempo
+        printf("Algoritmo de ordenacao em execucao, aguarde...\n");
+        // Iniciar a contagem de tempo antes de chamar o bubbleSort
+        start_time = clock();
+
+        // Ordena os dados usando o Bubble Sort
+        unsigned long long int numIterations = bubbleSort(data, numLines, coluna);
+
+        // Finaliza a contagem de tempo após o bubbleSort
+        end_time = clock();
+
+        printf("\nDados ordenados com sucesso\n");
+        printf("Numero de iteracoes: %llu\n", numIterations);
+
+        double elapsed_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+        printf("Tempo gasto na ordenacao: %.6f segundos\n", elapsed_time);
+
+        // Libera a memória alocada
+        free(data);
+
+        // Pergunta ao usuário se deseja encerrar
+        printf("\nDeseja fechar o programa? Se sim, pressione Enter. Caso contrário, insira qualquer texto e pressione Enter.\n");
+        scanf("%s", choice);
+
+        if (strlen(choice) == 0) { // Se a entrada for uma linha vazia (somente Enter), encerre o programa
+            break; // Sai do loop
+        }
     }
 
-    // Lendo os dados do arquivo CSV e armazenando na estrutura DataPoint
-    int i = 0;
-    while (fgets(buffer, sizeof(buffer), file) != NULL) {
-        sscanf(buffer, "%f,%f,%f", &data[i].lat, &data[i].lon, &data[i].frp);
-        i++;
-    }
-
-    fclose(file);
-    printf("\n-------------------------------------------------------------\n");
-    printf("Dados antes da ordenacao:\n");
-    for (int i = 0; i < numLines; i++) {
-        printf("(%.4f, %.4f, %.1f)\n", data[i].lat, data[i].lon, data[i].frp);
-    }
-    
-    // Escolha de coluna para ordenação
-    int coluna;
-    escolhaColuna();
-    scanf("%d", &coluna);
-    // Ordena os dados usando o Bubble Sort
-    int numIterations = bubbleSort(data, numLines, coluna);
-    printf("\n-------------------------------------------------------------\n");
-    printf("\nDados apos a ordenacao:\n");
-    for (int i = 0; i < numLines; i++) {
-        printf("(%.4f, %.4f, %.1f)\n", data[i].lat, data[i].lon, data[i].frp);
-    }
-    printf("\n-------------------------------------------------------------\n");
-    printf("\nNumero de iteracoes: %d\n", numIterations);
-    
-    switch (coluna) {
-        case 1:
-            printf("Ordenado pela coluna lat.");
-            break;
-        case 2:
-            printf("Ordenado pela coluna lon.");
-            break;
-        case 3:
-            printf("Ordenado pela coluna frp.");
-            break;
-        default:
-            break;
-    }
-
-    free(data); // Liberar a memória alocada
-    
     return 0;
 }
