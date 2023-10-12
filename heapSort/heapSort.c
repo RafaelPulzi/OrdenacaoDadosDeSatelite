@@ -125,7 +125,11 @@ int main() {
     // Lendo os dados do arquivo CSV e armazenando na estrutura DataPoint
     int i = 0;
     while (fgets(buffer, sizeof(buffer), file) != NULL) {
-        sscanf(buffer, "%f,%f,%f", &data[i].lat, &data[i].lon, &data[i].frp);
+        // Tenta ler os dados usando vírgula como delimitador
+        if (sscanf(buffer, "%f,%f,%f", &data[i].lat, &data[i].lon, &data[i].frp) != 3) {
+            // Se não foi possível ler usando vírgula, tenta com ponto e vírgula
+            sscanf(buffer, "%f;%f;%f", &data[i].lat, &data[i].lon, &data[i].frp);
+        }
         i++;
     }
 

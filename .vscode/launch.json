@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/Pulzi/Desktop/Projetos/Aps4Semestre/quickSort",
-      "program": "c:/Users/Pulzi/Desktop/Projetos/Aps4Semestre/quickSort/build/Debug/outDebug",
+      "cwd": "c:/Users/Pulzi/Desktop/Projetos/Aps4Semestre/heapSort",
+      "program": "c:/Users/Pulzi/Desktop/Projetos/Aps4Semestre/heapSort/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
